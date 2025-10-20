@@ -169,6 +169,7 @@ export function Navbar() {
                     "relative min-w-[44px] min-h-[44px] hover:bg-primary/10 transition-all duration-200",
                     cartBump && "animate-bounce",
                   )}
+                  data-cart-icon
                 >
                   <ShoppingCart className="h-6 w-6 md:h-5 md:w-5" />
                   {cartItemCount > 0 && (

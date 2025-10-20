@@ -1,10 +1,14 @@
 "use client"
+import { useState } from "react"
+import type React from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useLanguage } from "@/contexts/language-context"
 import { useCart } from "@/contexts/cart-context"
-import { Plus, Flame, Leaf, Star } from "lucide-react"
+import { Plus, Flame, Leaf, Star, Check } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 
 const featuredItems = [
   {
@@ -79,14 +83,23 @@ export function FeaturedMenu() {
   const { locale, t } = useLanguage()
   const { addItem } = useCart()
   const { toast } = useToast()
+  const [addingItem, setAddingItem] = useState<string | null>(null)
 
-  const handleAddToCart = (item: (typeof featuredItems)[0]) => {
-    addItem({
-      id: item.id,
-      name: item.name[locale],
-      price: item.price,
-      image: item.image,
-    })
+  const handleAddToCart = (item: (typeof featuredItems)[0], event: React.MouseEvent<HTMLButtonElement>) => {
+    const buttonElement = event.currentTarget
+
+    setAddingItem(item.id)
+
+    addItem(
+      {
+        id: item.id,
+        name: item.name[locale],
+        price: item.price,
+        image: item.image,
+      },
+      buttonElement,
+    )
+
     toast({
       title: locale === "es" ? "Añadido al pedido" : "Added to order",
       description: item.name[locale],
@@ -96,6 +109,8 @@ export function FeaturedMenu() {
         </Button>
       ),
     })
+
+    setTimeout(() => setAddingItem(null), 1000)
   }
 
   return (
@@ -166,11 +181,23 @@ export function FeaturedMenu() {
                   <span className="font-display font-bold text-2xl text-primary">${item.price.toFixed(2)}</span>
                   <Button
                     size="sm"
-                    onClick={() => handleAddToCart(item)}
-                    className="bg-primary hover:bg-primary/90 font-semibold gap-2"
+                    onClick={(e) => handleAddToCart(item, e)}
+                    className={cn(
+                      "bg-primary hover:bg-primary/90 font-semibold gap-2 transition-all duration-200",
+                      addingItem === item.id && "scale-95",
+                    )}
                   >
-                    <Plus className="h-4 w-4" />
-                    {locale === "es" ? "Agregar" : "Add"}
+                    {addingItem === item.id ? (
+                      <>
+                        <Check className="h-4 w-4" />
+                        {locale === "es" ? "Agregado" : "Added"}
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="h-4 w-4" />
+                        {locale === "es" ? "Agregar" : "Add"}
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
