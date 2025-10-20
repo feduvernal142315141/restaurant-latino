@@ -61,6 +61,8 @@ export const translations = {
       success: "Reservation confirmed! See you soon.",
       policy: "We'll hold your table for 10 minutes from the reserved time.",
       addToCalendar: "Add to Calendar",
+      selectDate: "Select a date",
+      contact: "Contact Information",
     },
     orders: {
       title: "Order for Pickup",
@@ -81,6 +83,7 @@ export const translations = {
       success: "Thank you! Order #A274 ready in approx. 15-20 min.",
       saveReceipt: "Save Receipt (PDF)",
       getDirections: "Get Directions",
+      readyIn: "Ready in 15-20 minutes",
     },
     contact: {
       title: "Contact Us",
@@ -194,6 +197,8 @@ export const translations = {
       success: "¡Reserva confirmada! Te esperamos.",
       policy: "Guardaremos tu mesa por 10 minutos a partir de la hora reservada.",
       addToCalendar: "Agregar a Calendario",
+      selectDate: "Selecciona una fecha", 
+      contact: "Datos de Contacto",
     },
     orders: {
       title: "Pedidos para Recoger",
@@ -214,6 +219,7 @@ export const translations = {
       success: "¡Gracias! Pedido #A274 listo aprox. 15-20 min.",
       saveReceipt: "Guardar Recibo (PDF)",
       getDirections: "Cómo Llegar",
+      readyIn: "Listo en 15-20 minutos",
     },
     contact: {
       title: "Contáctanos",
