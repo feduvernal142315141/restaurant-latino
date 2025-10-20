@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 
 export type CartItem = {
   id: string
@@ -18,12 +18,14 @@ type CartContextType = {
   updateQuantity: (id: string, quantity: number) => void
   clearCart: () => void
   getTotal: () => number
+  cartBump: boolean
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [cartBump, setCartBump] = useState(false)
 
   const addItem = (item: Omit<CartItem, "quantity">) => {
     setItems((prev) => {
@@ -33,6 +35,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...item, quantity: 1 }]
     })
+
+    setCartBump(true)
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(20)
+    }
   }
 
   const removeItem = (id: string) => {
@@ -55,8 +62,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   }
 
+  useEffect(() => {
+    if (cartBump) {
+      const timer = setTimeout(() => setCartBump(false), 500)
+      return () => clearTimeout(timer)
+    }
+  }, [cartBump])
+
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, getTotal }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, getTotal, cartBump }}>
       {children}
     </CartContext.Provider>
   )

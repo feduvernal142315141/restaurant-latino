@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, Phone, ShoppingCart, Utensils, Calendar, Package, Mail } from "lucide-react"
+import { X, Phone, ShoppingCart, Utensils, Calendar, Package, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/contexts/language-context"
 import { useCart } from "@/contexts/cart-context"
@@ -13,7 +13,7 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { locale, setLocale, t } = useLanguage()
-  const { items } = useCart()
+  const { items, cartBump } = useCart()
   const pathname = usePathname()
 
   useEffect(() => {
@@ -135,12 +135,12 @@ export function Navbar() {
             </div>
 
             {/* Right side - Language switcher, Cart, CTA */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
                 <button
                   onClick={() => setLocale("es")}
                   className={cn(
-                    "px-3 py-1 rounded-md text-sm font-medium transition-all duration-200",
+                    "px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 min-w-[44px] min-h-[36px] flex items-center justify-center",
                     locale === "es"
                       ? "bg-primary text-primary-foreground scale-105"
                       : "text-muted-foreground hover:text-foreground hover:scale-105",
@@ -151,7 +151,7 @@ export function Navbar() {
                 <button
                   onClick={() => setLocale("en")}
                   className={cn(
-                    "px-3 py-1 rounded-md text-sm font-medium transition-all duration-200",
+                    "px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 min-w-[44px] min-h-[36px] flex items-center justify-center",
                     locale === "en"
                       ? "bg-primary text-primary-foreground scale-105"
                       : "text-muted-foreground hover:text-foreground hover:scale-105",
@@ -161,12 +161,23 @@ export function Navbar() {
                 </button>
               </div>
 
-              {/* Cart Icon */}
               <Link href="/pickup" className="relative">
-                <Button variant="ghost" size="icon" className="relative">
-                  <ShoppingCart className="h-5 w-5" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "relative min-w-[44px] min-h-[44px] hover:bg-primary/10 transition-all duration-200",
+                    cartBump && "animate-bounce",
+                  )}
+                >
+                  <ShoppingCart className="h-6 w-6 md:h-5 md:w-5" />
                   {cartItemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-in zoom-in duration-200">
+                    <span
+                      className={cn(
+                        "absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center",
+                        "animate-in zoom-in duration-200 shadow-lg",
+                      )}
+                    >
                       {cartItemCount}
                     </span>
                   )}
@@ -178,32 +189,43 @@ export function Navbar() {
                 <Button className="bg-primary hover:bg-primary/90 font-semibold">{t.nav.orderNow}</Button>
               </Link>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
+              <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className={cn(
+                  "md:hidden relative min-w-[44px] min-h-[44px] flex items-center justify-center",
+                  "rounded-lg hover:bg-muted/50 active:scale-95 transition-all duration-200",
+                  "bg-muted/30",
+                )}
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               >
-                <div className="relative w-6 h-6">
-                  <Menu
+                <div className="relative w-6 h-6 flex flex-col items-center justify-center">
+                  {/* Top bar */}
+                  <span
                     className={cn(
-                      "h-6 w-6 absolute inset-0 transition-all duration-300",
-                      isMobileMenuOpen ? "rotate-90 opacity-0 scale-0" : "rotate-0 opacity-100 scale-100",
+                      "absolute w-6 h-0.5 bg-foreground rounded-full transition-all duration-300 ease-out",
+                      isMobileMenuOpen ? "rotate-45 translate-y-0" : "-translate-y-2",
                     )}
                   />
-                  <X
+                  {/* Middle bar */}
+                  <span
                     className={cn(
-                      "h-6 w-6 absolute inset-0 transition-all duration-300",
-                      isMobileMenuOpen ? "rotate-0 opacity-100 scale-100" : "-rotate-90 opacity-0 scale-0",
+                      "absolute w-6 h-0.5 bg-foreground rounded-full transition-all duration-300 ease-out",
+                      isMobileMenuOpen ? "opacity-0 scale-0" : "opacity-100 scale-100",
+                    )}
+                  />
+                  {/* Bottom bar */}
+                  <span
+                    className={cn(
+                      "absolute w-6 h-0.5 bg-foreground rounded-full transition-all duration-300 ease-out",
+                      isMobileMenuOpen ? "-rotate-45 translate-y-0" : "translate-y-2",
                     )}
                   />
                 </div>
-              </Button>
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Overlay backdrop */}
         <div
           className={cn(
             "md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-all duration-300",
@@ -212,7 +234,6 @@ export function Navbar() {
           onClick={() => setIsMobileMenuOpen(false)}
         />
 
-        {/* Mobile Menu Panel - slides from right */}
         <div
           className={cn(
             "md:hidden fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-cream/96 backdrop-blur-xl z-50 shadow-2xl transition-all duration-300 ease-out",
@@ -228,7 +249,7 @@ export function Navbar() {
               <button
                 onClick={() => setLocale("es")}
                 className={cn(
-                  "px-3 py-1 rounded-md text-sm font-medium transition-all duration-200",
+                  "px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 min-w-[44px] min-h-[36px] flex items-center justify-center",
                   locale === "es"
                     ? "bg-primary text-primary-foreground scale-105"
                     : "text-muted-foreground hover:text-foreground hover:scale-105",
@@ -239,7 +260,7 @@ export function Navbar() {
               <button
                 onClick={() => setLocale("en")}
                 className={cn(
-                  "px-3 py-1 rounded-md text-sm font-medium transition-all duration-200",
+                  "px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 min-w-[44px] min-h-[36px] flex items-center justify-center",
                   locale === "en"
                     ? "bg-primary text-primary-foreground scale-105"
                     : "text-muted-foreground hover:text-foreground hover:scale-105",
@@ -251,14 +272,14 @@ export function Navbar() {
 
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2 hover:bg-background/50 rounded-lg transition-colors"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-background/50 rounded-lg transition-colors active:scale-95"
+              aria-label="Close menu"
             >
               <X className="h-6 w-6 text-foreground" />
             </button>
           </div>
 
-          {/* Menu Items with stagger animation */}
-          <div className="px-6 py-8 flex flex-col gap-2 overflow-y-auto h-[calc(100vh-180px)]">
+          <div className="px-6 py-8 flex flex-col gap-3 overflow-y-auto h-[calc(100vh-180px)]">
             {menuItems.map((item, index) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -270,7 +291,7 @@ export function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={cn(
                     "group relative flex items-start gap-4 p-4 rounded-xl transition-all duration-200",
-                    "hover:bg-background/50 active:scale-[0.98]",
+                    "hover:bg-background/50 active:scale-[0.98] min-h-[60px]",
                     isActive && "bg-primary/10",
                     // Stagger animation delay
                     isMobileMenuOpen && "animate-in slide-in-from-right fade-in",
@@ -288,12 +309,12 @@ export function Navbar() {
                   {/* Icon with animation */}
                   <div
                     className={cn(
-                      "flex-shrink-0 p-2 rounded-lg transition-all duration-200",
+                      "flex-shrink-0 p-2.5 rounded-lg transition-all duration-200",
                       isActive ? "bg-primary text-primary-foreground" : "bg-background/50 text-muted-foreground",
                       "group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground",
                     )}
                   >
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-6 w-6" />
                   </div>
 
                   {/* Text content */}
@@ -318,7 +339,7 @@ export function Navbar() {
               <Button
                 size="lg"
                 className={cn(
-                  "w-full bg-primary hover:bg-primary/90 font-semibold text-lg shadow-lg",
+                  "w-full bg-primary hover:bg-primary/90 font-semibold text-lg shadow-lg min-h-[56px]",
                   "active:scale-95 transition-transform",
                   isMobileMenuOpen && "animate-in slide-in-from-bottom fade-in duration-300 delay-500",
                 )}
