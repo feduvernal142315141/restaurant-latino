@@ -4,6 +4,7 @@ import { Poppins, Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Providers } from "@/components/providers"
+import { FlyingItemContainer } from "@/components/flying-item"
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -127,6 +128,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
+        <FlyingItemContainer />
         <Analytics />
       </body>
     </html>
