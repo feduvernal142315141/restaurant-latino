@@ -27,11 +27,17 @@ export function Navbar() {
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden"
+      document.body.style.position = "fixed"
+      document.body.style.width = "100%"
     } else {
-      document.body.style.overflow = "unset"
+      document.body.style.overflow = ""
+      document.body.style.position = ""
+      document.body.style.width = ""
     }
     return () => {
-      document.body.style.overflow = "unset"
+      document.body.style.overflow = ""
+      document.body.style.position = ""
+      document.body.style.width = ""
     }
   }, [isMobileMenuOpen])
 
@@ -227,129 +233,130 @@ export function Navbar() {
           </div>
         </div>
 
-        <div
-          className={cn(
-            "md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-all duration-300",
-            isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none",
-          )}
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
+        {isMobileMenuOpen && (
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-in fade-in duration-300"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
 
-        <div
-          className={cn(
-            "md:hidden fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-cream/96 backdrop-blur-xl z-50 shadow-2xl transition-all duration-300 ease-out",
-            isMobileMenuOpen ? "translate-x-0" : "translate-x-full",
-          )}
-        >
-          {/* Menu Header - sticky */}
-          <div className="sticky top-0 bg-cream/80 backdrop-blur-md border-b border-border/50 px-6 py-4 flex items-center justify-between">
-            <div className="font-display font-bold text-xl text-primary">Sabor Latino</div>
+        {isMobileMenuOpen && (
+          <div
+            className={cn(
+              "md:hidden fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-cream/96 backdrop-blur-xl z-50 shadow-2xl",
+              "animate-in slide-in-from-right duration-300",
+            )}
+          >
+            {/* Menu Header - sticky */}
+            <div className="sticky top-0 bg-cream/80 backdrop-blur-md border-b border-border/50 px-6 py-4 flex items-center justify-between">
+              <div className="font-display font-bold text-xl text-primary">Sabor Latino</div>
 
-            {/* Language Switcher in menu */}
-            <div className="flex items-center gap-1 bg-background/50 rounded-lg p-1">
+              {/* Language Switcher in menu */}
+              <div className="flex items-center gap-1 bg-background/50 rounded-lg p-1">
+                <button
+                  onClick={() => setLocale("es")}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 min-w-[44px] min-h-[36px] flex items-center justify-center",
+                    locale === "es"
+                      ? "bg-primary text-primary-foreground scale-105"
+                      : "text-muted-foreground hover:text-foreground hover:scale-105",
+                  )}
+                >
+                  ES
+                </button>
+                <button
+                  onClick={() => setLocale("en")}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 min-w-[44px] min-h-[36px] flex items-center justify-center",
+                    locale === "en"
+                      ? "bg-primary text-primary-foreground scale-105"
+                      : "text-muted-foreground hover:text-foreground hover:scale-105",
+                  )}
+                >
+                  EN
+                </button>
+              </div>
+
               <button
-                onClick={() => setLocale("es")}
-                className={cn(
-                  "px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 min-w-[44px] min-h-[36px] flex items-center justify-center",
-                  locale === "es"
-                    ? "bg-primary text-primary-foreground scale-105"
-                    : "text-muted-foreground hover:text-foreground hover:scale-105",
-                )}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-background/50 rounded-lg transition-colors active:scale-95"
+                aria-label="Close menu"
               >
-                ES
-              </button>
-              <button
-                onClick={() => setLocale("en")}
-                className={cn(
-                  "px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 min-w-[44px] min-h-[36px] flex items-center justify-center",
-                  locale === "en"
-                    ? "bg-primary text-primary-foreground scale-105"
-                    : "text-muted-foreground hover:text-foreground hover:scale-105",
-                )}
-              >
-                EN
+                <X className="h-6 w-6 text-foreground" />
               </button>
             </div>
 
-            <button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-background/50 rounded-lg transition-colors active:scale-95"
-              aria-label="Close menu"
-            >
-              <X className="h-6 w-6 text-foreground" />
-            </button>
-          </div>
+            <div className="px-6 py-8 flex flex-col gap-3 overflow-y-auto h-[calc(100vh-180px)]">
+              {menuItems.map((item, index) => {
+                const Icon = item.icon
+                const isActive = pathname === item.href
 
-          <div className="px-6 py-8 flex flex-col gap-3 overflow-y-auto h-[calc(100vh-180px)]">
-            {menuItems.map((item, index) => {
-              const Icon = item.icon
-              const isActive = pathname === item.href
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={cn(
-                    "group relative flex items-start gap-4 p-4 rounded-xl transition-all duration-200",
-                    "hover:bg-background/50 active:scale-[0.98] min-h-[60px]",
-                    isActive && "bg-primary/10",
-                    // Stagger animation delay
-                    isMobileMenuOpen && "animate-in slide-in-from-right fade-in",
-                  )}
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    animationFillMode: "backwards",
-                  }}
-                >
-                  {/* Active indicator */}
-                  {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-primary rounded-r-full animate-in slide-in-from-left duration-300" />
-                  )}
-
-                  {/* Icon with animation */}
-                  <div
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className={cn(
-                      "flex-shrink-0 p-2.5 rounded-lg transition-all duration-200",
-                      isActive ? "bg-primary text-primary-foreground" : "bg-background/50 text-muted-foreground",
-                      "group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground",
+                      "group relative flex items-start gap-4 p-4 rounded-xl transition-all duration-200",
+                      "hover:bg-background/50 active:scale-[0.98] min-h-[60px]",
+                      isActive && "bg-primary/10",
+                      // Stagger animation delay
+                      "animate-in slide-in-from-right fade-in",
                     )}
+                    style={{
+                      animationDelay: `${index * 100}ms`,
+                      animationFillMode: "backwards",
+                    }}
                   >
-                    <Icon className="h-6 w-6" />
-                  </div>
+                    {/* Active indicator */}
+                    {isActive && (
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-primary rounded-r-full animate-in slide-in-from-left duration-300" />
+                    )}
 
-                  {/* Text content */}
-                  <div className="flex-1 min-w-0">
+                    {/* Icon with animation */}
                     <div
                       className={cn(
-                        "text-xl font-display font-semibold mb-1 transition-colors",
-                        isActive ? "text-primary" : "text-foreground group-hover:text-primary",
+                        "flex-shrink-0 p-2.5 rounded-lg transition-all duration-200",
+                        isActive ? "bg-primary text-primary-foreground" : "bg-background/50 text-muted-foreground",
+                        "group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground",
                       )}
                     >
-                      {item.label}
+                      <Icon className="h-6 w-6" />
                     </div>
-                    <div className="text-sm text-muted-foreground leading-relaxed">{item.description}</div>
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-cream via-cream to-transparent">
-            <Link href="/pickup" onClick={() => setIsMobileMenuOpen(false)}>
-              <Button
-                size="lg"
-                className={cn(
-                  "w-full bg-primary hover:bg-primary/90 font-semibold text-lg shadow-lg min-h-[56px]",
-                  "active:scale-95 transition-transform",
-                  isMobileMenuOpen && "animate-in slide-in-from-bottom fade-in duration-300 delay-500",
-                )}
-              >
-                {locale === "es" ? "¡Haz tu pedido en segundos!" : "Order in seconds!"}
-              </Button>
-            </Link>
+                    {/* Text content */}
+                    <div className="flex-1 min-w-0">
+                      <div
+                        className={cn(
+                          "text-xl font-display font-semibold mb-1 transition-colors",
+                          isActive ? "text-primary" : "text-foreground group-hover:text-primary",
+                        )}
+                      >
+                        {item.label}
+                      </div>
+                      <div className="text-sm text-muted-foreground leading-relaxed">{item.description}</div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-cream via-cream to-transparent">
+              <Link href="/pickup" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button
+                  size="lg"
+                  className={cn(
+                    "w-full bg-primary hover:bg-primary/90 font-semibold text-lg shadow-lg min-h-[56px]",
+                    "active:scale-95 transition-transform",
+                    "animate-in slide-in-from-bottom fade-in duration-300 delay-500",
+                  )}
+                >
+                  {locale === "es" ? "¡Haz tu pedido en segundos!" : "Order in seconds!"}
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
       </nav>
     </>
   )
